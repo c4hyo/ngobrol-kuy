@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1034573860599",
+    "project_id": "ngobrol-kuy-d01f4",
+    "storage_bucket": "ngobrol-kuy-d01f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034573860599:android:08aa4a5c268be32beacdf2",
+        "android_client_info": {
+          "package_name": "com.example.ngobrolkuy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1034573860599-tjtlk74a63d09qsn750euo70af4r041b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7yx_AcDa7NL4kALTuriw8WVRJ8mLb4fM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1034573860599-tjtlk74a63d09qsn750euo70af4r041b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
