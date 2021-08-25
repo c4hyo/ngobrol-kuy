@@ -15,16 +15,14 @@ class UserController extends GetxController {
 
   Future<bool> tambahTeman(String id, String idTeman) async {
     try {
-      await users
-          .doc(id)
-          .collection("teman")
-          .doc(idTeman)
-          .set({"waktu": DateTime.now()});
-      await users
-          .doc(idTeman)
-          .collection("teman")
-          .doc(id)
-          .set({"waktu": DateTime.now()});
+      await users.doc(id).collection("teman").doc(idTeman).set(
+        {"waktu": DateTime.now()},
+        SetOptions(merge: true),
+      );
+      await users.doc(idTeman).collection("teman").doc(id).set(
+        {"waktu": DateTime.now()},
+        SetOptions(merge: true),
+      );
       return true;
     } catch (e) {
       return false;
@@ -35,7 +33,7 @@ class UserController extends GetxController {
     try {
       await users
           .doc(pesan!.dari)
-          .collection("pengguna")
+          .collection("teman")
           .doc(pesan.ke)
           .collection("pesan")
           .add({
@@ -45,14 +43,17 @@ class UserController extends GetxController {
         "waktu": DateTime.now().toIso8601String(),
         "tipe": "text",
       });
-      await users.doc(pesan.dari).collection("pengguna").doc(pesan.ke).set({
-        "pesan_terbaru": pesan.pesan,
-        "waktu_pesan": DateTime.now().toIso8601String(),
-        "pengirim":pesan.dari,
-      });
+      await users.doc(pesan.dari).collection("teman").doc(pesan.ke).set(
+        {
+          "pesan_terbaru": pesan.pesan,
+          "waktu_pesan": DateTime.now().toIso8601String(),
+          "pengirim": pesan.dari,
+        },
+        SetOptions(merge: true),
+      );
       await users
           .doc(pesan.ke)
-          .collection("pengguna")
+          .collection("teman")
           .doc(pesan.dari)
           .collection("pesan")
           .add({
@@ -62,11 +63,14 @@ class UserController extends GetxController {
         "waktu": DateTime.now().toIso8601String(),
         "tipe": "text",
       });
-      await users.doc(pesan.ke).collection("pengguna").doc(pesan.dari).set({
-        "pesan_terbaru": pesan.pesan,
-        "waktu_pesan": DateTime.now().toIso8601String(),
-        "pengirim":pesan.dari,
-      });
+      await users.doc(pesan.ke).collection("teman").doc(pesan.dari).set(
+        {
+          "pesan_terbaru": pesan.pesan,
+          "waktu_pesan": DateTime.now().toIso8601String(),
+          "pengirim": pesan.dari,
+        },
+        SetOptions(merge: true),
+      );
       return true;
     } catch (e) {
       return false;

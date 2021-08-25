@@ -163,7 +163,7 @@ class ChatList extends StatelessWidget {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: users
                       .doc(auth.user!.uid)
-                      .collection("pengguna")
+                      .collection("teman")
                       .orderBy("waktu_pesan", descending: true)
                       .snapshots(),
                   builder: (_, snapshot) {
