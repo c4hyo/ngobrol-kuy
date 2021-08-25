@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:ngobrolkuy/config/collection.dart';
 import 'package:ngobrolkuy/config/string.dart';
 import 'package:ngobrolkuy/config/warna.dart';
@@ -170,81 +171,104 @@ class ChatList extends StatelessWidget {
                     if (!snapshot.hasData) {
                       return Center(child: LoadingProses());
                     }
-                    return ListView.builder(
-                      primary: false,
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (_, index) {
-                        DocumentSnapshot doc = snapshot.data!.docs[index];
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: users.doc(doc.id).get(),
-                          builder: (_, sn) {
-                            if (!sn.hasData) {
-                              return Card(
-                                color: secondary,
-                              );
-                            }
-                            DocumentSnapshot docs = sn.data!;
-                            UserModel userModel = UserModel.mapsDoc(docs);
-                            return Card(
-                              color: primaryAccent,
-                              child: ListTile(
-                                onTap: () {
-                                  Get.to(() => RuangPesan(), arguments: {
-                                    "userModel": userModel,
-                                  });
-                                },
-                                leading: CircleAvatar(
-                                  backgroundColor: white,
-                                  radius: 30,
-                                  backgroundImage: (userModel.urlGambar == "")
-                                      ? AssetImage("assets/logo.png")
-                                      : NetworkImage(userModel.urlGambar!)
-                                          as ImageProvider,
-                                ),
-                                title: Text(
-                                  "${userModel.nama}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: white,
-                                    fontSize: 20,
+                    return (snapshot.data!.docs.length == 0)
+                        ? Center(
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: Get.width,
+                                  child: Lottie.network(
+                                    "https://assets1.lottiefiles.com/packages/lf20_x62chJ.json",
                                   ),
                                 ),
-                                subtitle: (doc['pengirim'] == auth.user!.uid)
-                                    ? Text(
-                                        "${doc['pesan_terbaru']}",
-                                        maxLines: 3,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
+                                Text(
+                                  "Belum ada percakapan",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            primary: false,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (_, index) {
+                              DocumentSnapshot doc = snapshot.data!.docs[index];
+                              return FutureBuilder<DocumentSnapshot>(
+                                future: users.doc(doc.id).get(),
+                                builder: (_, sn) {
+                                  if (!sn.hasData) {
+                                    return Card(
+                                      color: secondary,
+                                    );
+                                  }
+                                  DocumentSnapshot docs = sn.data!;
+                                  UserModel userModel = UserModel.mapsDoc(docs);
+                                  return Card(
+                                    color: primaryAccent,
+                                    child: ListTile(
+                                      onTap: () {
+                                        Get.to(() => RuangPesan(), arguments: {
+                                          "userModel": userModel,
+                                        });
+                                      },
+                                      leading: CircleAvatar(
+                                        backgroundColor: white,
+                                        radius: 30,
+                                        backgroundImage: (userModel.urlGambar ==
+                                                "")
+                                            ? AssetImage("assets/logo.png")
+                                            : NetworkImage(userModel.urlGambar!)
+                                                as ImageProvider,
+                                      ),
+                                      title: Text(
+                                        "${userModel.nama}",
                                         style: TextStyle(
+                                          fontWeight: FontWeight.bold,
                                           color: white,
-                                          fontSize: 14,
-                                          fontStyle: FontStyle.italic,
+                                          fontSize: 20,
                                         ),
-                                      )
-                                    : Text(
-                                        "${doc['pesan_terbaru']}",
-                                        maxLines: 3,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle: (doc['pengirim'] ==
+                                              auth.user!.uid)
+                                          ? Text(
+                                              (doc['tipe_pesan'] == "text")
+                                                  ? "${doc['pesan_terbaru']}"
+                                                  : "[Pesan Gambar]",
+                                              maxLines: 3,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: white,
+                                                fontSize: 14,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            )
+                                          : Text(
+                                              (doc['tipe_pesan'] == "text")
+                                                  ? "${doc['pesan_terbaru']}"
+                                                  : "[Pesan Gambar]",
+                                              maxLines: 3,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: white,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                      trailing: Text(
+                                        "${waktu(doc['waktu_pesan'])}",
                                         style: TextStyle(
                                           color: white,
                                           fontSize: 14,
                                         ),
                                       ),
-                                trailing: Text(
-                                  "${waktu(doc['waktu_pesan'])}",
-                                  style: TextStyle(
-                                    color: white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
                   },
                 ),
               ),

@@ -1,21 +1,25 @@
-import 'package:bubble/bubble.dart';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ngobrolkuy/config/collection.dart';
-import 'package:ngobrolkuy/config/string.dart';
 import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
+import 'package:ngobrolkuy/controller/utilityController.dart';
 import 'package:ngobrolkuy/komponen_view/loading.dart';
 import 'package:ngobrolkuy/model/pesanModel.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
+import 'package:ngobrolkuy/komponen_view/bubble.dart';
 
 class RuangPesan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pesanController = TextEditingController();
     final user = Get.find<UserController>();
+    final upload = Get.put(UtilityController());
     return GetBuilder<AuthController>(dispose: (_) {
       users
           .doc(Get.find<AuthController>().user!.uid)
@@ -153,153 +157,195 @@ class RuangPesan extends StatelessWidget {
                             child: LoadingProses(),
                           );
                         }
-                        return Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: ListView.builder(
-                            itemCount: snaps.data!.docs.length,
-                            reverse: true,
-                            itemBuilder: (_, i) {
-                              DocumentSnapshot doc = snaps.data!.docs[i];
-                              PesanModel pesanModel = PesanModel.fromDoc(doc);
-                              return (pesanModel.dari == auth.user!.uid)
-                                  ? Bubble(
-                                      margin: BubbleEdges.only(top: 10),
-                                      alignment: Alignment.topRight,
-                                      nip: BubbleNip.rightTop,
-                                      color: primaryAccent,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "${pesanModel.pesan}",
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(
-                                              color: white,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${waktu(pesanModel.waktu!)}",
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(fontSize: 10),
-                                          ),
-                                        ],
+                        return Obx(
+                          () => Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: (upload.image.value == "")
+                                ? ListView.builder(
+                                    itemCount: snaps.data!.docs.length,
+                                    reverse: true,
+                                    itemBuilder: (_, i) {
+                                      DocumentSnapshot doc =
+                                          snaps.data!.docs[i];
+                                      PesanModel pesanModel =
+                                          PesanModel.fromDoc(doc);
+                                      return (pesanModel.tipe == "text")
+                                          ? bubbleChatText(
+                                              pesanModel, auth.user!.uid)
+                                          : bubbleChatImage(
+                                              pesanModel, auth.user!.uid);
+                                    },
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text(
+                                        "Preview Gambar",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: primary,
+                                        ),
                                       ),
-                                    )
-                                  : Bubble(
-                                      margin: BubbleEdges.only(
-                                        top: 10,
+                                      SizedBox(
+                                        height: 20,
                                       ),
-                                      alignment: Alignment.topLeft,
-                                      nip: BubbleNip.leftTop,
-                                      color: primary,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "${pesanModel.pesan}",
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                              color: white,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${waktu(pesanModel.waktu!)}",
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: white,
-                                            ),
-                                          ),
-                                        ],
+                                      Container(
+                                        height: Get.width,
+                                        child: Image.file(
+                                          File(upload.image.value),
+                                          fit: BoxFit.scaleDown,
+                                        ),
                                       ),
-                                    );
-                            },
+                                    ],
+                                  ),
                           ),
                         );
                       },
                     ),
                   ),
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      flex: 12,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          height: 60,
-                          child: TextFormField(
-                            controller: pesanController,
-                            onChanged: (s) {
-                              users
-                                  .doc(auth.user!.uid)
-                                  .update({"menulis": true});
-                              if (s.isEmpty) {
-                                users
-                                    .doc(auth.user!.uid)
-                                    .update({"menulis": false});
-                              }
-                            },
-                            decoration: InputDecoration(
-                                fillColor: white,
-                                filled: true,
-                                hintText: "Ketikan pesan",
-                                hintStyle: TextStyle(
-                                  color: primaryAccent,
+                Obx(
+                  () => Container(
+                    child: (upload.image.value == "")
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 12,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Container(
+                                    height: 60,
+                                    child: TextFormField(
+                                      controller: pesanController,
+                                      onChanged: (s) {
+                                        users
+                                            .doc(auth.user!.uid)
+                                            .update({"menulis": true});
+                                        if (s.isEmpty) {
+                                          users
+                                              .doc(auth.user!.uid)
+                                              .update({"menulis": false});
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                          fillColor: white,
+                                          filled: true,
+                                          hintText: "Ketikan pesan",
+                                          hintStyle: TextStyle(
+                                            color: primaryAccent,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide:
+                                                BorderSide(color: primary),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide:
+                                                BorderSide(color: primary),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide:
+                                                BorderSide(color: primary),
+                                          )),
+                                    ),
+                                  ),
                                 ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: primary),
+                              ),
+                              Expanded(
+                                flex: 4,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        upload.getImage(ImageSource.gallery);
+                                      },
+                                      icon: Icon(
+                                        Icons.image,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.send_outlined,
+                                        color: primaryAccent,
+                                      ),
+                                      onPressed: () async {
+                                        FocusScope.of(context).unfocus();
+                                        if (pesanController.text.isNotEmpty) {
+                                          PesanModel pesan = PesanModel(
+                                              dari: auth.user!.uid,
+                                              ke: Get
+                                                  .arguments['userModel'].uid,
+                                              pesan: pesanController.text);
+                                          await user.kirimPesan(pesan: pesan);
+                                        }
+                                        pesanController.clear();
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: primary),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  upload.resetImage();
+                                },
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.redAccent,
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: primary),
-                                )),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  upload.getImage(ImageSource.gallery);
+                                },
+                                icon: Icon(
+                                  Icons.update_outlined,
+                                  color: brown,
+                                ),
+                              ),
+                              (upload.loadingUpload.isTrue)
+                                  ? CircularProgressIndicator()
+                                  : IconButton(
+                                      icon: Icon(
+                                        Icons.send_outlined,
+                                        color: primaryAccent,
+                                      ),
+                                      onPressed: () async {
+                                        upload.loadingUpload.value = true;
+                                        upload.urlImage.value =
+                                            await StorageServices.uploadImage(
+                                          fileImage: File(upload.image.value),
+                                          userId: auth.user!.uid,
+                                        );
+                                        PesanModel pesan = PesanModel(
+                                          dari: auth.user!.uid,
+                                          ke: Get.arguments['userModel'].uid,
+                                          pesan: upload.urlImage.value,
+                                        );
+                                        await user.kirimPesanGambar(
+                                            pesan: pesan);
+                                        upload.resetImage();
+                                        pesanController.clear();
+                                      },
+                                    ),
+                            ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.image,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.send_outlined,
-                              color: primaryAccent,
-                            ),
-                            onPressed: () async {
-                              FocusScope.of(context).unfocus();
-                              if (pesanController.text.isNotEmpty) {
-                                PesanModel pesan = PesanModel(
-                                    dari: auth.user!.uid,
-                                    ke: Get.arguments['userModel'].uid,
-                                    pesan: pesanController.text);
-                                await user.kirimPesan(pesan: pesan);
-                              }
-                              pesanController.clear();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),

@@ -29,6 +29,56 @@ class UserController extends GetxController {
     }
   }
 
+  Future<bool> kirimPesanGambar({PesanModel? pesan}) async {
+    try {
+      await users
+          .doc(pesan!.dari)
+          .collection("teman")
+          .doc(pesan.ke)
+          .collection("pesan")
+          .add({
+        "dari": pesan.dari,
+        "ke": pesan.ke,
+        "pesan": pesan.pesan,
+        "waktu": DateTime.now().toIso8601String(),
+        "tipe": "gambar",
+      });
+      await users.doc(pesan.dari).collection("teman").doc(pesan.ke).set(
+        {
+          "pesan_terbaru": pesan.pesan,
+          "waktu_pesan": DateTime.now().toIso8601String(),
+          "pengirim": pesan.dari,
+          "tipe_pesan": "gambar",
+        },
+        SetOptions(merge: true),
+      );
+      await users
+          .doc(pesan.ke)
+          .collection("teman")
+          .doc(pesan.dari)
+          .collection("pesan")
+          .add({
+        "dari": pesan.dari,
+        "ke": pesan.ke,
+        "pesan": pesan.pesan,
+        "waktu": DateTime.now().toIso8601String(),
+        "tipe": "gambar",
+      });
+      await users.doc(pesan.ke).collection("teman").doc(pesan.dari).set(
+        {
+          "pesan_terbaru": pesan.pesan,
+          "waktu_pesan": DateTime.now().toIso8601String(),
+          "pengirim": pesan.dari,
+          "tipe_pesan": "gambar",
+        },
+        SetOptions(merge: true),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> kirimPesan({PesanModel? pesan}) async {
     try {
       await users
@@ -48,6 +98,7 @@ class UserController extends GetxController {
           "pesan_terbaru": pesan.pesan,
           "waktu_pesan": DateTime.now().toIso8601String(),
           "pengirim": pesan.dari,
+          "tipe_pesan": "text",
         },
         SetOptions(merge: true),
       );
@@ -68,6 +119,7 @@ class UserController extends GetxController {
           "pesan_terbaru": pesan.pesan,
           "waktu_pesan": DateTime.now().toIso8601String(),
           "pengirim": pesan.dari,
+          "tipe_pesan": "text",
         },
         SetOptions(merge: true),
       );
