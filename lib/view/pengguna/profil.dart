@@ -42,7 +42,7 @@ class ProfilTeman extends StatelessWidget {
             .doc(Get.arguments['userModel'].uid)
             .snapshots(),
         builder: (_, snap) {
-          if(!snap.hasData){
+          if (!snap.hasData) {
             return Text("");
           }
           return Column(
@@ -51,8 +51,9 @@ class ProfilTeman extends StatelessWidget {
               Center(
                 child: (!snap.data!.exists)
                     ? ElevatedButton(
-                        onPressed: () async{
-                          await user.tambahTeman(auth.user!.uid, Get.arguments['userModel'].uid);
+                        onPressed: () async {
+                          await user.tambahTeman(
+                              auth.user!.uid, Get.arguments['userModel'].uid);
                           user.indexTab.value = 0;
                           Get.back();
                         },

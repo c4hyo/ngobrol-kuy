@@ -37,7 +37,7 @@ class AuthController extends GetxController {
           email: email!, password: password!);
       Get.find<UserController>().userModel =
           await Get.find<UserController>().profilUser(userCredential.user!.uid);
-      users.doc(userCredential.user!.uid).update({"online":true});
+      users.doc(userCredential.user!.uid).update({"online": true});
       loginLoading.value = false;
     } catch (e) {
       loginLoading.value = false;
@@ -45,18 +45,16 @@ class AuthController extends GetxController {
     }
   }
 
-  void logout() async{
+  void logout() async {
     await auth.signOut();
     Get.find<UserController>().clearPengguna();
   }
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     _user.bindStream(auth.authStateChanges());
   }
-
 }
 
 class AuthBinding extends Bindings {
@@ -65,4 +63,3 @@ class AuthBinding extends Bindings {
     Get.put(AuthController(), permanent: true);
   }
 }
-

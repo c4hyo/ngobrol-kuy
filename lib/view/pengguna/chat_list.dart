@@ -10,7 +10,7 @@ import 'package:ngobrolkuy/komponen_view/loading.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
 import 'package:ngobrolkuy/view/pengguna/ruangPesan.dart';
 
-class BerandaHome extends StatelessWidget {
+class ChatList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Get.find<UserController>();
@@ -213,6 +213,9 @@ class BerandaHome extends StatelessWidget {
                                 subtitle: (doc['pengirim'] == auth.user!.uid)
                                     ? Text(
                                         "${doc['pesan_terbaru']}",
+                                        maxLines: 3,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: white,
                                           fontSize: 14,
@@ -221,6 +224,9 @@ class BerandaHome extends StatelessWidget {
                                       )
                                     : Text(
                                         "${doc['pesan_terbaru']}",
+                                        maxLines: 3,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: white,
                                           fontSize: 14,

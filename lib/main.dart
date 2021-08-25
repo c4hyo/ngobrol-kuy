@@ -13,14 +13,14 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MyApp());
 }
-class MyApp extends StatelessWidget {
 
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialBinding: AuthBinding(),
       theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(),
+        textTheme: GoogleFonts.latoTextTheme(),
         primaryColor: primary,
       ),
       home: WrapAuth(),
@@ -43,4 +43,3 @@ class WrapAuth extends StatelessWidget {
     );
   }
 }
-

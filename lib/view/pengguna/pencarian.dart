@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:ngobrolkuy/config/collection.dart';
 import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
-import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/controller/utilityController.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
 import 'package:ngobrolkuy/view/pengguna/profil.dart';
@@ -20,7 +19,16 @@ class Pencarian extends StatelessWidget {
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(80),
-          child: Padding(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  end: Alignment.bottomCenter,
+                  begin: Alignment.topCenter,
+                  colors: [
+                    primary,
+                    primaryAccent,
+                  ]),
+            ),
             padding: const EdgeInsets.all(10),
             child: TextFormField(
               onChanged: (s) {
@@ -73,15 +81,17 @@ class Pencarian extends StatelessWidget {
                       subtitle: (userModel.online == true)
                           ? Text("Online")
                           : Text("Offline"),
-                      trailing: (auth.user!.uid == userModel.uid)? Icon(Icons.person): IconButton(
-                        icon: Icon(Icons.zoom_in),
-                        onPressed: () {
-                          utility.pencarian.value = "";
-                          Get.to(()=>ProfilTeman(),arguments: {
-                            "userModel":userModel,
-                          });
-                        },
-                      ),
+                      trailing: (auth.user!.uid == userModel.uid)
+                          ? Icon(Icons.person)
+                          : IconButton(
+                              icon: Icon(Icons.zoom_in),
+                              onPressed: () {
+                                utility.pencarian.value = "";
+                                Get.to(() => ProfilTeman(), arguments: {
+                                  "userModel": userModel,
+                                });
+                              },
+                            ),
                     ),
                   );
                 },

@@ -5,7 +5,7 @@ import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/komponen_view/loading.dart';
-import 'package:ngobrolkuy/view/pengguna/beranda.dart';
+import 'package:ngobrolkuy/view/pengguna/chat_list.dart';
 import 'package:ngobrolkuy/view/pengguna/pencarian.dart';
 import 'package:ngobrolkuy/view/pengguna/teman.dart';
 
@@ -19,24 +19,28 @@ class _BerandaState extends State<Beranda> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
         users.doc(auth.user!.uid).update({"online": true});
         break;
       case AppLifecycleState.inactive:
-        users.doc(auth.user!.uid).update({"online": false,"menulis":false,});
+        users.doc(auth.user!.uid).update({
+          "online": false,
+          "menulis": false,
+        });
         break;
       case AppLifecycleState.paused:
-        users.doc(auth.user!.uid).update({"online": false,"menulis":false});
+        users.doc(auth.user!.uid).update({"online": false, "menulis": false});
+        break;
+
+      case AppLifecycleState.detached:
         break;
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     WidgetsBinding.instance!.addObserver(this);
     super.initState();
   }
@@ -101,7 +105,7 @@ class UserMain extends StatelessWidget {
 }
 
 List<Widget> listScreen = [
-  BerandaHome(),
+  ChatList(),
   Pencarian(),
   Teman(),
   Text("Profil"),
@@ -109,7 +113,7 @@ List<Widget> listScreen = [
 
 List<BottomNavigationBarItem> bottomItem = [
   BottomNavigationBarItem(
-    icon: Icon(Icons.home),
+    icon: Icon(Icons.message),
     label: "Beranda",
   ),
   BottomNavigationBarItem(

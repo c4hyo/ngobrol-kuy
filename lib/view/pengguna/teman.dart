@@ -19,12 +19,19 @@ class Teman extends StatelessWidget {
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(80),
-          child: Padding(
+          child: Container(
             padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  end: Alignment.bottomCenter,
+                  begin: Alignment.topCenter,
+                  colors: [
+                    primary,
+                    primaryAccent,
+                  ]),
+            ),
             child: TextFormField(
-              onChanged: (s) {
-
-              },
+              onChanged: (s) {},
               decoration: InputDecoration(
                 fillColor: white,
                 filled: true,
@@ -81,7 +88,6 @@ class Teman extends StatelessWidget {
                                   Get.to(() => ProfilTeman(), arguments: {
                                     "userModel": userModel,
                                   });
-
                                 },
                                 child: Text("Profil"),
                               ),

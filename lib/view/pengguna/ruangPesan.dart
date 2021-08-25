@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ngobrolkuy/config/collection.dart';
+import 'package:ngobrolkuy/config/string.dart';
 import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
@@ -79,7 +80,7 @@ class RuangPesan extends StatelessWidget {
                           ),
                         ),
                         CircleAvatar(
-                          radius: 10,
+                          radius: 7,
                           backgroundColor:
                               (userModel.online!) ? Colors.green : Colors.red,
                         ),
@@ -93,7 +94,7 @@ class RuangPesan extends StatelessWidget {
                               "${userModel.nama}",
                               style: TextStyle(
                                 color: white,
-                                fontSize: 30,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -137,28 +138,62 @@ class RuangPesan extends StatelessWidget {
                             DocumentSnapshot doc = snaps.data!.docs[i];
                             PesanModel pesanModel = PesanModel.fromDoc(doc);
                             return (pesanModel.dari == auth.user!.uid)
-                                ? Bubble(
-                                    margin: BubbleEdges.only(top: 10),
-                                    alignment: Alignment.topRight,
-                                    nipWidth: 20,
-                                    nipHeight: 10,
-                                    nip: BubbleNip.rightTop,
-                                    color: white,
-                                    child: Text("${pesanModel.pesan}",
-                                        textAlign: TextAlign.right),
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Bubble(
+                                        margin: BubbleEdges.only(top: 10),
+                                        alignment: Alignment.topRight,
+                                        nip: BubbleNip.rightTop,
+                                        color: primaryAccent,
+                                        child: Text(
+                                          "${pesanModel.pesan}",
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(color: white),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 10,
+                                          top: 5,
+                                        ),
+                                        child: Text(
+                                          "${waktu(pesanModel.waktu!)}",
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                    ],
                                   )
-                                : Bubble(
-                                    margin: BubbleEdges.only(top: 10),
-                                    alignment: Alignment.topLeft,
-                                    nipWidth: 20,
-                                    nipHeight: 10,
-                                    nip: BubbleNip.leftTop,
-                                    color: brown,
-                                    child: Text(
-                                      "${pesanModel.pesan}",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(color: white),
-                                    ),
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Bubble(
+                                        margin: BubbleEdges.only(
+                                          top: 10,
+                                        ),
+                                        alignment: Alignment.topLeft,
+                                        nip: BubbleNip.leftTop,
+                                        color: primary,
+                                        child: Text(
+                                          "${pesanModel.pesan}",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(color: white),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 10,
+                                          top: 5,
+                                        ),
+                                        child: Text(
+                                          "${waktu(pesanModel.waktu!)}",
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                    ],
                                   );
                           },
                         ),
@@ -172,7 +207,7 @@ class RuangPesan extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    flex: 10,
+                    flex: 12,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Container(
@@ -211,23 +246,33 @@ class RuangPesan extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    flex: 2,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.send_outlined,
-                        color: primaryAccent,
-                      ),
-                      onPressed: () async {
-                        FocusScope.of(context).unfocus();
-                        if (pesanController.text.isNotEmpty) {
-                          PesanModel pesan = PesanModel(
-                              dari: auth.user!.uid,
-                              ke: Get.arguments['userModel'].uid,
-                              pesan: pesanController.text);
-                          await user.kirimPesan(pesan: pesan);
-                        }
-                        pesanController.clear();
-                      },
+                    flex: 4,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.image,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.send_outlined,
+                            color: primaryAccent,
+                          ),
+                          onPressed: () async {
+                            FocusScope.of(context).unfocus();
+                            if (pesanController.text.isNotEmpty) {
+                              PesanModel pesan = PesanModel(
+                                  dari: auth.user!.uid,
+                                  ke: Get.arguments['userModel'].uid,
+                                  pesan: pesanController.text);
+                              await user.kirimPesan(pesan: pesan);
+                            }
+                            pesanController.clear();
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],
