@@ -1,72 +1,79 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ngobrolkuy/config/collection.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ngobrolkuy/config/warna.dart';
-import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
+import 'package:ngobrolkuy/controller/utilityController.dart';
+import 'package:ngobrolkuy/komponen_view/fetchPostingProfil.dart';
+import 'package:ngobrolkuy/komponen_view/uploadposting.dart';
 
-class ProfilTeman extends StatelessWidget {
+class Profil extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final auth = Get.find<AuthController>();
     final user = Get.find<UserController>();
-    return Scaffold(
-      appBar: AppBar(
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(200),
-          child: Column(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage("assets/logo.png"),
-                radius: 70,
-                backgroundColor: white,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  "${Get.arguments['userModel'].nama}",
-                  style: TextStyle(
-                      color: white, fontWeight: FontWeight.bold, fontSize: 30),
-                ),
-              ),
-            ],
+    final upload = Get.put(UtilityController());
+    return Obx(
+      () => Scaffold(
+        floatingActionButtonLocation: (upload.image.value == "")
+            ? FloatingActionButtonLocation.miniCenterFloat
+            : FloatingActionButtonLocation.miniStartTop,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: (upload.image.value == "") ? primary : Colors.red,
+          onPressed: () {
+            if (upload.image.value == "") {
+              upload.getImage(ImageSource.gallery);
+            } else {
+              upload.resetImage();
+            }
+          },
+          child: Icon(
+            (upload.image.value == "") ? Icons.add_a_photo : Icons.cancel,
           ),
         ),
-      ),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: users
-            .doc(auth.user!.uid)
-            .collection("teman")
-            .doc(Get.arguments['userModel'].uid)
-            .snapshots(),
-        builder: (_, snap) {
-          if (!snap.hasData) {
-            return Text("");
-          }
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: (!snap.data!.exists)
-                    ? ElevatedButton(
-                        onPressed: () async {
-                          await user.tambahTeman(
-                              auth.user!.uid, Get.arguments['userModel'].uid);
-                          user.indexTab.value = 0;
-                          Get.back();
-                        },
-                        child: Text("Tambah Teman"),
-                      )
-                    : ElevatedButton(
-                        onPressed: () => print("ye"),
-                        child: Text("Hapus Teman"),
-                      ),
+        appBar: AppBar(
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(100),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      primary,
+                      primaryAccent,
+                    ]),
               ),
-            ],
-          );
-        },
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage("assets/logo.png"),
+                    radius: 40,
+                    backgroundColor: white,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      "${user.userModel.nama}",
+                      style: TextStyle(
+                        color: white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: Obx(
+          () => SafeArea(
+            child: (upload.image.value == "")
+                ? FetchPostingProfil()
+                : AddPostingUser(),
+          ),
+        ),
       ),
     );
   }

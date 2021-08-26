@@ -6,7 +6,7 @@ import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/utilityController.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
-import 'package:ngobrolkuy/view/pengguna/profil.dart';
+import 'package:ngobrolkuy/view/pengguna/profilTeman.dart';
 
 class Pencarian extends StatelessWidget {
   @override

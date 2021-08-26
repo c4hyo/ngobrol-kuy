@@ -331,6 +331,7 @@ class RuangPesan extends StatelessWidget {
                                             await StorageServices.uploadImage(
                                           fileImage: File(upload.image.value),
                                           userId: auth.user!.uid,
+                                          jenis: "pesan",
                                         );
                                         PesanModel pesan = PesanModel(
                                           dari: auth.user!.uid,

@@ -43,11 +43,12 @@ class ImageConfig {
 class StorageServices {
   static store.Reference storage = store.FirebaseStorage.instance.ref();
 
-  static Future<String> uploadImage({File? fileImage, String? userId}) async {
+  static Future<String> uploadImage(
+      {File? fileImage, String? userId, String? jenis}) async {
     String imageId = Uuid().v4();
     File image = await ImageConfig.compressImage(imageId, fileImage!);
     store.UploadTask uploadTask =
-        storage.child("pesan/$userId/$imageId.jpg").putFile(image);
+        storage.child("$jenis/$userId/$imageId.jpg").putFile(image);
     store.TaskSnapshot snaps = await uploadTask.whenComplete(() => null);
     String imageUrl = await snaps.ref.getDownloadURL();
     return imageUrl;

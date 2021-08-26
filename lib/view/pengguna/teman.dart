@@ -6,7 +6,7 @@ import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/komponen_view/loading.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
-import 'package:ngobrolkuy/view/pengguna/profil.dart';
+import 'package:ngobrolkuy/view/pengguna/profilTeman.dart';
 import 'package:ngobrolkuy/view/pengguna/ruangPesan.dart';
 
 class Teman extends StatelessWidget {

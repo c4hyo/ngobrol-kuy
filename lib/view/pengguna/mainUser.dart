@@ -7,6 +7,7 @@ import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/komponen_view/loading.dart';
 import 'package:ngobrolkuy/view/pengguna/chat_list.dart';
 import 'package:ngobrolkuy/view/pengguna/pencarian.dart';
+import 'package:ngobrolkuy/view/pengguna/profil.dart';
 import 'package:ngobrolkuy/view/pengguna/teman.dart';
 
 class Beranda extends StatefulWidget {
@@ -108,7 +109,7 @@ List<Widget> listScreen = [
   ChatList(),
   Pencarian(),
   Teman(),
-  Text("Profil"),
+  Profil(),
 ];
 
 List<BottomNavigationBarItem> bottomItem = [
