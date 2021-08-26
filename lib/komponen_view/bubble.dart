@@ -1,6 +1,7 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:ngobrolkuy/config/string.dart';
 import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/model/pesanModel.dart';
@@ -15,8 +16,12 @@ Widget bubbleChatText(PesanModel pesanModel, String uid) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              LinkWell(
                 "${pesanModel.pesan}",
+                linkStyle: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.underline,
+                ),
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: white,
@@ -41,9 +46,13 @@ Widget bubbleChatText(PesanModel pesanModel, String uid) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              LinkWell(
                 "${pesanModel.pesan}",
                 textAlign: TextAlign.left,
+                linkStyle: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.underline,
+                ),
                 style: TextStyle(
                   color: white,
                   fontSize: 17,
