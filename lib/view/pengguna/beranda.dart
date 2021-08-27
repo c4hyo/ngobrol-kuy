@@ -152,98 +152,84 @@ class BerandaHome extends StatelessWidget {
       ),
       backgroundColor: white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          primary: true,
-          child: Column(
-            children: [
-              StreamBuilder<QuerySnapshot>(
-                stream:
-                    users.doc(auth.user!.uid).collection("teman").snapshots(),
-                builder: (_, us) {
-                  if (!us.hasData) {
-                    return SizedBox.shrink();
-                  }
-                  return ListView.builder(
-                    primary: false,
-                    shrinkWrap: true,
-                    itemCount: us.data!.docs.length,
-                    itemBuilder: (_, i) {
-                      return StreamBuilder<QuerySnapshot>(
-                        stream: posting
-                            .where("id_user", isEqualTo: us.data!.docs[i].id)
-                            .orderBy("waktu", descending: true)
-                            .snapshots(),
-                        builder: (_, pos) {
-                          if (!pos.hasData) {
-                            return SizedBox.shrink();
-                          }
-                          return ListView.builder(
-                            primary: false,
-                            shrinkWrap: true,
-                            itemCount: pos.data!.docs.length,
-                            itemBuilder: (_, index) {
-                              DocumentSnapshot docs = pos.data!.docs[index];
-                              PostingModel postingModel =
-                                  PostingModel.fromDoc(docs);
-                              return StreamBuilder<DocumentSnapshot>(
-                                stream:
-                                    users.doc(postingModel.idUser).snapshots(),
-                                builder: (_, pro) {
-                                  if (!pro.hasData) {
-                                    return SizedBox.shrink();
-                                  }
-                                  DocumentSnapshot doc = pro.data!;
-                                  UserModel userModel = UserModel.mapsDoc(doc);
-                                  return Card(
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                            title: Text("${userModel.nama}"),
-                                            subtitle:
-                                                Text("${postingModel.waktu}"),
-                                            leading: ClipOval(
-                                              child: (userModel.urlGambar ==
-                                                          "" ||
-                                                      userModel.urlGambar ==
-                                                          null)
-                                                  ? Image.asset(
-                                                      "assets/logo.png")
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          userModel.urlGambar!),
-                                                      placeholder: AssetImage(
-                                                          "assets/logo.png"),
-                                                    ),
-                                            )),
-                                        Container(
-                                          height: Get.width * 0.6,
-                                          width: Get.width * 0.6,
-                                          child: FadeInImage(
-                                            image: NetworkImage(
-                                                postingModel.urlPosting!),
-                                            placeholder:
-                                                AssetImage("assets/logo.png"),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Text("${postingModel.judul}"),
-                                        )
-                                      ],
+        child: StreamBuilder<QuerySnapshot>(
+          stream: users.doc(auth.user!.uid).collection("teman").snapshots(),
+          builder: (_, us) {
+            if (!us.hasData) {
+              return SizedBox.shrink();
+            }
+            return ListView.builder(
+              primary: false,
+              shrinkWrap: true,
+              itemCount: us.data!.docs.length,
+              itemBuilder: (_, i) {
+                return StreamBuilder<QuerySnapshot>(
+                  stream: posting
+                      .where("id_user", isEqualTo: us.data!.docs[i].id)
+                      .orderBy("waktu", descending: true)
+                      .snapshots(),
+                  builder: (_, pos) {
+                    if (!pos.hasData) {
+                      return SizedBox.shrink();
+                    }
+                    return ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: pos.data!.docs.length,
+                      itemBuilder: (_, index) {
+                        DocumentSnapshot docs = pos.data!.docs[index];
+                        PostingModel postingModel = PostingModel.fromDoc(docs);
+                        return StreamBuilder<DocumentSnapshot>(
+                          stream: users.doc(postingModel.idUser).snapshots(),
+                          builder: (_, pro) {
+                            if (!pro.hasData) {
+                              return SizedBox.shrink();
+                            }
+                            DocumentSnapshot doc = pro.data!;
+                            UserModel userModel = UserModel.mapsDoc(doc);
+                            return Card(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                      title: Text("${userModel.nama}"),
+                                      subtitle: Text("${postingModel.waktu}"),
+                                      leading: ClipOval(
+                                        child: (userModel.urlGambar == "" ||
+                                                userModel.urlGambar == null)
+                                            ? Image.asset("assets/logo.png")
+                                            : FadeInImage(
+                                                image: NetworkImage(
+                                                    userModel.urlGambar!),
+                                                placeholder: AssetImage(
+                                                    "assets/logo.png"),
+                                              ),
+                                      )),
+                                  Container(
+                                    height: Get.width * 0.6,
+                                    width: Get.width * 0.6,
+                                    child: FadeInImage(
+                                      image: NetworkImage(
+                                          postingModel.urlPosting!),
+                                      placeholder:
+                                          AssetImage("assets/logo.png"),
                                     ),
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Text("${postingModel.judul}"),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );
