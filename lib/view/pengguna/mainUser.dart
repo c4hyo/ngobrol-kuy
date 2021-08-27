@@ -5,7 +5,7 @@ import 'package:ngobrolkuy/config/warna.dart';
 import 'package:ngobrolkuy/controller/authController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/komponen_view/loading.dart';
-import 'package:ngobrolkuy/view/pengguna/chat_list.dart';
+import 'package:ngobrolkuy/view/pengguna/beranda.dart';
 import 'package:ngobrolkuy/view/pengguna/pencarian.dart';
 import 'package:ngobrolkuy/view/pengguna/profil.dart';
 import 'package:ngobrolkuy/view/pengguna/teman.dart';
@@ -106,7 +106,7 @@ class UserMain extends StatelessWidget {
 }
 
 List<Widget> listScreen = [
-  ChatList(),
+  BerandaHome(),
   Pencarian(),
   Teman(),
   Profil(),

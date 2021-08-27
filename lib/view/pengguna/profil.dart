@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ngobrolkuy/config/collection.dart';
 import 'package:ngobrolkuy/config/warna.dart';
+import 'package:ngobrolkuy/controller/authController.dart';
+import 'package:ngobrolkuy/controller/postingController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/controller/utilityController.dart';
 import 'package:ngobrolkuy/komponen_view/fetchPostingProfil.dart';
@@ -12,6 +15,8 @@ class Profil extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Get.find<UserController>();
     final upload = Get.put(UtilityController());
+    final post = Get.put(PostingController());
+    final auth = Get.find<AuthController>();
     return Obx(
       () => Scaffold(
         floatingActionButtonLocation: (upload.image.value == "")
@@ -31,8 +36,19 @@ class Profil extends StatelessWidget {
           ),
         ),
         appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () {
+                users.doc(auth.user!.uid).update({"online": false});
+                auth.logout();
+              },
+              icon: Icon(
+                Icons.exit_to_app,
+              ),
+            )
+          ],
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(100),
+            preferredSize: Size.fromHeight(150),
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -59,6 +75,32 @@ class Profil extends StatelessWidget {
                         color: white,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Obx(
+                    () => Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "Posting: ${post.totalPosting.value}",
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            "Teman: ${post.totalTeman.value}",
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

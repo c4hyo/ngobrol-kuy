@@ -12,6 +12,7 @@ class UserController extends GetxController {
 
   set userModel(UserModel value) => this._userModel.value = value;
   final indexTab = 0.obs;
+  final semuaTeman = <String>[].obs;
 
   Future<bool> tambahTeman(String id, String idTeman) async {
     try {
@@ -156,5 +157,6 @@ class UserController extends GetxController {
 
   clearPengguna() {
     _userModel.value = UserModel();
+    indexTab.value = 0;
   }
 }
