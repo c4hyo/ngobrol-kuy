@@ -11,7 +11,9 @@ class FetchPostingProfil extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Get.find<AuthController>();
     return StreamBuilder<QuerySnapshot>(
-      stream: posting
+      stream: users
+          .doc(auth.user!.uid)
+          .collection("posting")
           .where("id_user", isEqualTo: auth.user!.uid)
           .orderBy("waktu", descending: true)
           .snapshots(),

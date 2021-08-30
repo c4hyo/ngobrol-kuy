@@ -6,14 +6,32 @@ import 'package:ngobrolkuy/model/postingModel.dart';
 class PostingController extends GetxController {
   var totalPosting = 0.obs;
   var totalTeman = 0.obs;
+  var listTeman = <String>[].obs;
   Future<bool> addPosting({PostingModel? postingModel}) async {
     try {
-      await posting.add({
-        "id_user": postingModel!.idUser,
+      await users.doc(postingModel!.idUser).collection("posting").add({
+        "id_user": postingModel.idUser,
         "judul": postingModel.judul,
         "url_posting": postingModel.urlPosting,
         "waktu": DateTime.now().toIso8601String(),
       });
+      await users
+          .doc(postingModel.idUser)
+          .collection("teman")
+          .get()
+          .then((value) {
+        if (value.docs.length > 0) {
+          value.docs.forEach((element) {
+            users.doc(element.id).collection("posting").add({
+              "id_user": postingModel.idUser,
+              "judul": postingModel.judul,
+              "url_posting": postingModel.urlPosting,
+              "waktu": DateTime.now().toIso8601String(),
+            });
+          });
+        }
+      });
+
       return true;
     } catch (e) {
       return false;
@@ -21,7 +39,9 @@ class PostingController extends GetxController {
   }
 
   Stream<int> getTotalPosting(String? uid) {
-    return posting
+    return users
+        .doc(uid)
+        .collection("posting")
         .where("id_user", isEqualTo: uid)
         .snapshots()
         .map((event) => event.docs.length);
@@ -35,13 +55,26 @@ class PostingController extends GetxController {
         .map((event) => event.docs.length);
   }
 
+  Stream<List<String>> getListTeman(String id) {
+    return users.doc(id).collection("teman").snapshots().map((event) {
+      List<String> teman = [];
+      teman.add(id);
+      event.docs.forEach((element) {
+        teman.add(element.id);
+      });
+      return teman;
+    });
+  }
+
   @override
   void onInit() {
     super.onInit();
-    String uid = Get.find<AuthController>().user!.uid;
     totalPosting.bindStream(
-      getTotalPosting(uid),
+      getTotalPosting(Get.find<AuthController>().user!.uid),
     );
-    totalTeman.bindStream(getTotalTeman(uid));
+    totalTeman.bindStream(
+      getTotalTeman(Get.find<AuthController>().user!.uid),
+    );
+    listTeman.bindStream(getListTeman(Get.find<AuthController>().user!.uid));
   }
 }

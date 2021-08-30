@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ngobrolkuy/config/collection.dart';
+import 'package:ngobrolkuy/config/string.dart';
 import 'package:ngobrolkuy/config/warna.dart';
-import 'package:ngobrolkuy/controller/authController.dart';
+import 'package:ngobrolkuy/controller/postingController.dart';
 import 'package:ngobrolkuy/controller/userController.dart';
 import 'package:ngobrolkuy/model/postingModel.dart';
 import 'package:ngobrolkuy/model/userModel.dart';
@@ -13,7 +14,7 @@ class BerandaHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Get.find<UserController>();
-    final auth = Get.find<AuthController>();
+    final post = Get.put<PostingController>(PostingController());
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -152,84 +153,79 @@ class BerandaHome extends StatelessWidget {
       ),
       backgroundColor: white,
       body: SafeArea(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: users.doc(auth.user!.uid).collection("teman").snapshots(),
-          builder: (_, us) {
-            if (!us.hasData) {
-              return SizedBox.shrink();
-            }
-            return ListView.builder(
-              primary: false,
-              shrinkWrap: true,
-              itemCount: us.data!.docs.length,
-              itemBuilder: (_, i) {
-                return StreamBuilder<QuerySnapshot>(
-                  stream: posting
-                      .where("id_user", isEqualTo: us.data!.docs[i].id)
-                      .orderBy("waktu", descending: true)
-                      .snapshots(),
-                  builder: (_, pos) {
-                    if (!pos.hasData) {
-                      return SizedBox.shrink();
-                    }
-                    return ListView.builder(
-                      primary: false,
-                      shrinkWrap: true,
-                      itemCount: pos.data!.docs.length,
-                      itemBuilder: (_, index) {
-                        DocumentSnapshot docs = pos.data!.docs[index];
-                        PostingModel postingModel = PostingModel.fromDoc(docs);
-                        return StreamBuilder<DocumentSnapshot>(
-                          stream: users.doc(postingModel.idUser).snapshots(),
-                          builder: (_, pro) {
-                            if (!pro.hasData) {
-                              return SizedBox.shrink();
-                            }
-                            DocumentSnapshot doc = pro.data!;
-                            UserModel userModel = UserModel.mapsDoc(doc);
-                            return Card(
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                      title: Text("${userModel.nama}"),
-                                      subtitle: Text("${postingModel.waktu}"),
-                                      leading: ClipOval(
-                                        child: (userModel.urlGambar == "" ||
-                                                userModel.urlGambar == null)
-                                            ? Image.asset("assets/logo.png")
-                                            : FadeInImage(
-                                                image: NetworkImage(
-                                                    userModel.urlGambar!),
-                                                placeholder: AssetImage(
-                                                    "assets/logo.png"),
-                                              ),
-                                      )),
-                                  Container(
-                                    height: Get.width * 0.6,
-                                    width: Get.width * 0.6,
-                                    child: FadeInImage(
-                                      image: NetworkImage(
-                                          postingModel.urlPosting!),
-                                      placeholder:
-                                          AssetImage("assets/logo.png"),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text("${postingModel.judul}"),
-                                  )
-                                ],
+        child: Obx(
+          () => StreamBuilder<QuerySnapshot>(
+            stream: users
+                .doc(user.userModel.uid)
+                .collection("posting")
+                .orderBy("waktu", descending: true)
+                .snapshots(),
+            builder: (_, user) {
+              if (!user.hasData) {
+                return SizedBox.shrink();
+              }
+              return ListView.builder(
+                itemCount: user.data!.docs.length,
+                itemBuilder: (_, i) {
+                  PostingModel posting =
+                      PostingModel.fromDoc(user.data!.docs[i]);
+                  return StreamBuilder<DocumentSnapshot>(
+                    stream: users.doc(posting.idUser).snapshots(),
+                    builder: (_, postUser) {
+                      if (!postUser.hasData) {
+                        return SizedBox.shrink();
+                      }
+                      UserModel userModel = UserModel.mapsDoc(postUser.data!);
+                      return Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Card(
+                          color: Colors.grey.shade200,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ListTile(
+                                title: Text("${userModel.nama}"),
+                                subtitle: Text("${waktu(posting.waktu!)}"),
+                                leading: ClipOval(
+                                  child: (userModel.urlGambar == "" ||
+                                          userModel.urlGambar == null)
+                                      ? Image.asset("assets/logo.png")
+                                      : FadeInImage(
+                                          image: NetworkImage(
+                                              userModel.urlGambar!),
+                                          placeholder:
+                                              AssetImage("assets/logo.png"),
+                                          fit: BoxFit.scaleDown,
+                                        ),
+                                ),
                               ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            );
-          },
+                              Container(
+                                height: Get.width * 0.75,
+                                width: Get.width * 0.75,
+                                child: FadeInImage(
+                                  image: NetworkImage(posting.urlPosting!),
+                                  placeholder: AssetImage("assets/logo.png"),
+                                  fit: BoxFit.scaleDown,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text("${posting.judul}"),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

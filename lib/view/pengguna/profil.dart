@@ -13,9 +13,16 @@ import 'package:ngobrolkuy/komponen_view/uploadposting.dart';
 class Profil extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return ProfilX();
+  }
+}
+
+class ProfilX extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     final user = Get.find<UserController>();
     final upload = Get.put(UtilityController());
-    final post = Get.put(PostingController());
+    final post = Get.find<PostingController>();
     final auth = Get.find<AuthController>();
     return Obx(
       () => Scaffold(
@@ -28,11 +35,17 @@ class Profil extends StatelessWidget {
             if (upload.image.value == "") {
               upload.getImage(ImageSource.gallery);
             } else {
-              upload.resetImage();
+              if (upload.loadingUpload.isFalse) {
+                upload.resetImage();
+              }
             }
           },
           child: Icon(
-            (upload.image.value == "") ? Icons.add_a_photo : Icons.cancel,
+            (upload.image.value == "")
+                ? Icons.add_a_photo
+                : (upload.loadingUpload.isTrue)
+                    ? Icons.refresh
+                    : Icons.cancel,
           ),
         ),
         appBar: AppBar(
@@ -41,6 +54,9 @@ class Profil extends StatelessWidget {
               onPressed: () {
                 users.doc(auth.user!.uid).update({"online": false});
                 auth.logout();
+                Get.reset();
+                Get.put(AuthController());
+                Get.put(UserController());
               },
               icon: Icon(
                 Icons.exit_to_app,

@@ -61,5 +61,6 @@ class AuthBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(AuthController(), permanent: true);
+    Get.put(UserController(), permanent: true);
   }
 }
